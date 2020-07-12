@@ -14,18 +14,19 @@ class Product extends StatefulWidget {
 }
 
 class _ProductState extends State<Product> {
-  final price = NumberFormat("#,##0","en_US");
+  final price = NumberFormat("#,##0", "en_US");
   var loading = false;
   final list = new List<ProductModel>();
-  final GlobalKey<RefreshIndicatorState> _refresh = GlobalKey<RefreshIndicatorState>();
- Future<void> _listData() async { //Future<void> agar refresh swipe oke
+  final GlobalKey<RefreshIndicatorState> _refresh =
+      GlobalKey<RefreshIndicatorState>();
+  Future<void> _listData() async {
+    //Future<void> agar refresh swipe oke
     list.clear();
     setState(() {
       loading = true;
     });
     final response = await http.get(BaseUrl.listProduct);
     if (response.contentLength == 2) {
-      
     } else {
       final data = jsonDecode(response.body);
       data.forEach((api) {
@@ -46,56 +47,52 @@ class _ProductState extends State<Product> {
     }
   }
 
-  dialogDelete(String id){
+  dialogDelete(String id) {
     showDialog(
-      context: context,
-      builder: (context){
-        return Dialog(
-          child: ListView(
-            padding: EdgeInsets.all(16.0),
-            shrinkWrap: true,
-            children: <Widget>[
-              Text('Yakin hapus data ini?', style: TextStyle(
-                fontWeight: FontWeight.bold
-              ),),
-              SizedBox(
-                height: 10.0,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  InkWell(
-                    onTap: (){
-                      _delete(id);
-                    },
-                    child: Text("Ya")
-                  ),
-                  SizedBox(
-                    width: 16.0
-                  ),
-                  InkWell(
-                    onTap: (){
-                      Navigator.pop(context);
-                    },
-                    child: Text("Tidak")
-                  ),
-                ],
-              ),
-            ],
-          ),
-        );
-      }
-    );
+        context: context,
+        builder: (context) {
+          return Dialog(
+            child: ListView(
+              padding: EdgeInsets.all(16.0),
+              shrinkWrap: true,
+              children: <Widget>[
+                Text(
+                  'Yakin hapus data ini?',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                SizedBox(
+                  height: 10.0,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: <Widget>[
+                    InkWell(
+                        onTap: () {
+                          _delete(id);
+                        },
+                        child: Text("Ya")),
+                    SizedBox(width: 16.0),
+                    InkWell(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Text("Tidak")),
+                  ],
+                ),
+              ],
+            ),
+          );
+        });
   }
 
-  _delete(String id)async{
+  _delete(String id) async {
     final response = await http.post(BaseUrl.deleteProduct, body: {
-      "id"  : id,
+      "id": id,
     });
     final data = jsonDecode(response.body);
     int value = data['value'];
     String message = data['message'];
-    if(value == 1) {
+    if (value == 1) {
       setState(() {
         Navigator.pop(context);
         _listData();
@@ -118,7 +115,7 @@ class _ProductState extends State<Product> {
       body: RefreshIndicator(
         onRefresh: _listData,
         key: _refresh,
-              child: loading
+        child: loading
             ? Center(child: CircularProgressIndicator())
             : ListView.builder(
                 itemCount: list.length,
@@ -135,22 +132,39 @@ class _ProductState extends State<Product> {
                               Text(
                                 x.namaProduk,
                                 style: TextStyle(
-                                    fontSize: 18.0, fontWeight: FontWeight.bold),
+                                    fontSize: 18.0,
+                                    fontWeight: FontWeight.bold),
                               ),
-                              Text('Qty : '+ x.qty),
-                              Text('Harga : Rp.' + price.format(int.parse(x.harga))),
-                              Text('Insert By : '+ x.nama),
-                              Text('Created Date : '+ x.createdDate),
+                              Text('Qty : ' + x.qty),
+                              Text('Harga : Rp.' +
+                                  price.format(int.parse(x.harga))),
+                              Text('Insert By : ' + x.nama),
+                              Text('Created Date : ' + x.createdDate),
+                              const Divider(
+                                color: Colors.black,
+                                height: 10,
+                                thickness: 2,
+                                indent: 2,
+                                endIndent: 8,
+                              ),
                             ],
                           ),
                         ),
-                        IconButton(icon: Icon(Icons.edit), onPressed: (){
-                          Navigator.of(context).push(MaterialPageRoute(builder: (context) => EditProduct(x, _listData) ));
-                        },),
-                        IconButton(icon: Icon(Icons.delete), onPressed: (){
-                          dialogDelete(x.id);
-                          // _delete(x.id);
-                        },)
+                        IconButton(
+                          icon: Icon(Icons.edit),
+                          onPressed: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) =>
+                                    EditProduct(x, _listData)));
+                          },
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.delete),
+                          onPressed: () {
+                            dialogDelete(x.id);
+                            // _delete(x.id);
+                          },
+                        )
                       ],
                     ),
                   );
@@ -159,8 +173,8 @@ class _ProductState extends State<Product> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => AddProduct(_listData)));
+          Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => AddProduct(_listData)));
         },
         child: Icon(
           Icons.add,
