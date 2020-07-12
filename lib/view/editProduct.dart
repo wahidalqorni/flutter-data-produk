@@ -2,57 +2,56 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_project/modal/api.dart';
+import 'package:flutter_project/modal/productModel.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 
-class AddProduct extends StatefulWidget {
-
+class EditProduct extends StatefulWidget {
+  final ProductModel model;
   final VoidCallback reload;
-  AddProduct(this.reload);
+  EditProduct(this.model, this.reload);
 
   @override
-  _AddProductState createState() => _AddProductState();
+  _EditProductState createState() => _EditProductState();
 }
 
-class _AddProductState extends State<AddProduct> {
-  String namaProduk, qty, harga, idUsers;
+class _EditProductState extends State<EditProduct> {
   final _key = new GlobalKey<FormState>();
+  String namaProduk, qty, harga;
 
-  getPref()async{
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    setState(() {
-      idUsers = preferences.getString("id"); //ambil variabel id yg dibawah oleh shareprefrences saat login
-    });
+  TextEditingController txtNama, txtQty, txtHarga;
+
+  setup(){
+    txtNama = TextEditingController(text: widget.model.namaProduk);
+    txtQty = TextEditingController(text: widget.model.qty);
+    txtHarga = TextEditingController(text: widget.model.harga);
   }
 
   check(){
     final form = _key.currentState;
-    if (form.validate()) {
+    if(form.validate()){
       form.save();
-      //print("$username, $password");
       submit();
+    } else {
+
     }
   }
 
-  submit() async {
-    final response = await http.post(BaseUrl.addProduct, body: {
-        "namaProduk" : namaProduk,
-        "qty"        : qty,
-        "harga"      : harga,
-        "idUsers"    : idUsers
-      } 
-    );
-
+  submit()async{
+    final response = await http.post(BaseUrl.editProduct, body:{
+      "namaProduk" : namaProduk,
+      "qty"        : qty,
+      "harga"      : harga,
+      "id"         : widget.model.id
+    }); 
     final data = jsonDecode(response.body);
     int value = data['value'];
     String message = data['message'];
     if(value == 1) {
-      print(message);
       setState(() {
         widget.reload();
         Navigator.pop(context);
       });
-    } else {
+    } else {  
       print(message);
     }
   }
@@ -61,7 +60,7 @@ class _AddProductState extends State<AddProduct> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    getPref();
+    setup();
   }
 
   @override
@@ -74,6 +73,7 @@ class _AddProductState extends State<AddProduct> {
                 padding: EdgeInsets.all(16.0),
          children: <Widget>[
            TextFormField(
+             controller: txtNama,
              validator: (e) {
                 if (e.isEmpty) {
                   return "Insert Nama Produk!";
@@ -86,6 +86,7 @@ class _AddProductState extends State<AddProduct> {
            ),
            
           TextFormField(
+            controller: txtQty,
             validator: (e) {
                 if (e.isEmpty) {
                   return "Insert Qty!";
@@ -98,6 +99,7 @@ class _AddProductState extends State<AddProduct> {
            ),
 
            TextFormField(
+             controller: txtHarga,
              validator: (e) {
                 if (e.isEmpty) {
                   return "Insert Harga!";
