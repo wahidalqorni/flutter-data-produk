@@ -4,4 +4,5 @@ class BaseUrl {
   static String addProduct = "http://192.168.100.4/rest_flutter/api/addProduct.php";
   static String listProduct = "http://192.168.100.4/rest_flutter/api/listProduct.php";
   static String editProduct = "http://192.168.100.4/rest_flutter/api/editProduct.php";
+  static String deleteProduct = "http://192.168.100.4/rest_flutter/api/deleteProduct.php";
 }

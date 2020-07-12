@@ -6,6 +6,7 @@ import 'package:flutter_project/modal/productModel.dart';
 import 'package:flutter_project/view/addProduct.dart';
 import 'package:flutter_project/view/editProduct.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 class Product extends StatefulWidget {
   @override
@@ -13,6 +14,7 @@ class Product extends StatefulWidget {
 }
 
 class _ProductState extends State<Product> {
+  final price = NumberFormat("#,##0","en_US");
   var loading = false;
   final list = new List<ProductModel>();
   final GlobalKey<RefreshIndicatorState> _refresh = GlobalKey<RefreshIndicatorState>();
@@ -41,6 +43,65 @@ class _ProductState extends State<Product> {
       setState(() {
         loading = false;
       });
+    }
+  }
+
+  dialogDelete(String id){
+    showDialog(
+      context: context,
+      builder: (context){
+        return Dialog(
+          child: ListView(
+            padding: EdgeInsets.all(16.0),
+            shrinkWrap: true,
+            children: <Widget>[
+              Text('Yakin hapus data ini?', style: TextStyle(
+                fontWeight: FontWeight.bold
+              ),),
+              SizedBox(
+                height: 10.0,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget>[
+                  InkWell(
+                    onTap: (){
+                      _delete(id);
+                    },
+                    child: Text("Ya")
+                  ),
+                  SizedBox(
+                    width: 16.0
+                  ),
+                  InkWell(
+                    onTap: (){
+                      Navigator.pop(context);
+                    },
+                    child: Text("Tidak")
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      }
+    );
+  }
+
+  _delete(String id)async{
+    final response = await http.post(BaseUrl.deleteProduct, body: {
+      "id"  : id,
+    });
+    final data = jsonDecode(response.body);
+    int value = data['value'];
+    String message = data['message'];
+    if(value == 1) {
+      setState(() {
+        Navigator.pop(context);
+        _listData();
+      });
+    } else {
+      print(message);
     }
   }
 
@@ -77,7 +138,7 @@ class _ProductState extends State<Product> {
                                     fontSize: 18.0, fontWeight: FontWeight.bold),
                               ),
                               Text('Qty : '+ x.qty),
-                              Text('Harga : '+ x.harga),
+                              Text('Harga : Rp.' + price.format(int.parse(x.harga))),
                               Text('Insert By : '+ x.nama),
                               Text('Created Date : '+ x.createdDate),
                             ],
@@ -86,7 +147,10 @@ class _ProductState extends State<Product> {
                         IconButton(icon: Icon(Icons.edit), onPressed: (){
                           Navigator.of(context).push(MaterialPageRoute(builder: (context) => EditProduct(x, _listData) ));
                         },),
-                        IconButton(icon: Icon(Icons.delete), onPressed: (){},)
+                        IconButton(icon: Icon(Icons.delete), onPressed: (){
+                          dialogDelete(x.id);
+                          // _delete(x.id);
+                        },)
                       ],
                     ),
                   );

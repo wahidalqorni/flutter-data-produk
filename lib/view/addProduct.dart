@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_project/custom/currency.dart';
 import 'package:flutter_project/modal/api.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -38,7 +40,7 @@ class _AddProductState extends State<AddProduct> {
     final response = await http.post(BaseUrl.addProduct, body: {
         "namaProduk" : namaProduk,
         "qty"        : qty,
-        "harga"      : harga,
+        "harga"      : harga.replaceAll(",", ""),
         "idUsers"    : idUsers
       } 
     );
@@ -98,6 +100,10 @@ class _AddProductState extends State<AddProduct> {
            ),
 
            TextFormField(
+             inputFormatters: [
+               WhitelistingTextInputFormatter.digitsOnly, 
+               CurrencyFormat()
+             ],
              validator: (e) {
                 if (e.isEmpty) {
                   return "Insert Harga!";

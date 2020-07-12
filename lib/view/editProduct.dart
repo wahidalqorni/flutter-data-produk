@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_project/custom/currency.dart';
 import 'package:flutter_project/modal/api.dart';
 import 'package:flutter_project/modal/productModel.dart';
 import 'package:http/http.dart' as http;
@@ -40,7 +42,7 @@ class _EditProductState extends State<EditProduct> {
     final response = await http.post(BaseUrl.editProduct, body:{
       "namaProduk" : namaProduk,
       "qty"        : qty,
-      "harga"      : harga,
+      "harga"      : harga.replaceAll(",", ""),
       "id"         : widget.model.id
     }); 
     final data = jsonDecode(response.body);
@@ -99,6 +101,10 @@ class _EditProductState extends State<EditProduct> {
            ),
 
            TextFormField(
+             inputFormatters: [
+               WhitelistingTextInputFormatter.digitsOnly, 
+               CurrencyFormat()
+             ],
              controller: txtHarga,
              validator: (e) {
                 if (e.isEmpty) {

@@ -41,12 +41,18 @@ class _LoginState extends State<Login> {
     });
   }
 
+  var _autovalidate = false;
+
   check() {
     final form = _key.currentState;
     if (form.validate()) {
       form.save();
       //print("$username, $password");
       login();
+    } else {
+      setState(() {
+        _autovalidate = true;
+      });
     }
   }
 
@@ -121,6 +127,7 @@ class _LoginState extends State<Login> {
             title: Text("Login Page"),
           ),
           body: Form(
+           autovalidate: _autovalidate,
             key: _key,
             child: ListView(
               padding: EdgeInsets.all(16.0),
@@ -129,6 +136,8 @@ class _LoginState extends State<Login> {
                   validator: (e) {
                     if (e.isEmpty) {
                       return "Insert username!";
+                    } else if(!e.contains("@")){
+                      return "Masukkan Email kamu untuk username";
                     }
                   },
                   onSaved: (e) => username = e,
@@ -197,12 +206,18 @@ class _RegisterState extends State<Register> {
     });
   }
 
+  var validate = true;
+
   check() {
     final form = _key.currentState;
     if (form.validate()) {
       form.save();
       //print("$username, $password");
       save();
+    } else {
+      setState(() {
+        validate = true;
+      });
     }
   }
 
@@ -227,6 +242,7 @@ class _RegisterState extends State<Register> {
     return Scaffold(
       appBar: AppBar(),
       body: Form(
+        autovalidate: validate,
         key: _key,
         child: ListView(
           padding: EdgeInsets.all(16.0),
@@ -244,6 +260,8 @@ class _RegisterState extends State<Register> {
               validator: (e) {
                 if (e.isEmpty) {
                   return "Insert username!";
+                } else if(!e.contains("@")){
+                  return "Masukkan email kamu untuk username";
                 }
               },
               onSaved: (e) => username = e,
@@ -254,6 +272,8 @@ class _RegisterState extends State<Register> {
               validator: (p) {
                 if (p.isEmpty) {
                   return "Insert password!";
+                } else  if(p.length < 4) {
+                  return "Password minimal 4 karakter";
                 }
               },
               onSaved: (e) => password = e,
@@ -314,7 +334,7 @@ class _MainMenuState extends State<MainMenu> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 4,
+      length: 2,
       child: Scaffold(
         appBar: AppBar(
           title: Center(child: Text("Product App")),
@@ -349,26 +369,7 @@ class _MainMenuState extends State<MainMenu> {
                   ),
                 ),
               ),
-              InkWell(
-                child: FittedBox(
-                  child: Row(
-                    children: <Widget>[
-                      Icon(Icons.group),
-                      Text("User"),
-                    ],
-                  ),
-                ),
-              ),
-              InkWell(
-                child: FittedBox(
-                  child: Row(
-                    children: <Widget>[
-                      Icon(Icons.account_circle),
-                      Text("Profile"),
-                    ],
-                  ),
-                ),
-              )
+              
             ],
           ),
         ),
@@ -376,8 +377,6 @@ class _MainMenuState extends State<MainMenu> {
           children: <Widget>[
             Home(),
             Product(),
-            User(),
-            Profile(),
           ],
         ),
         bottomNavigationBar: TabBar(
@@ -397,14 +396,7 @@ class _MainMenuState extends State<MainMenu> {
                 icon: Icon(Icons.apps),
                 text: "Product",
               ),
-              Tab(
-                icon: Icon(Icons.group),
-                text: "Users",
-              ),
-              Tab(
-                icon: Icon(Icons.account_circle),
-                text: "Profile",
-              ),
+              
             ]),
       ),
     );
