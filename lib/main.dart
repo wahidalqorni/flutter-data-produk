@@ -13,9 +13,9 @@ void main() {
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
     theme: ThemeData(
-    primaryColor: Colors.purple[800],
-    accentColor: Colors.purple[600],
-  ),
+      primaryColor: Colors.purple[800],
+      accentColor: Colors.purple[600],
+    ),
     home: Login(),
   ));
 }
@@ -127,7 +127,7 @@ class _LoginState extends State<Login> {
             title: Text("Login Page"),
           ),
           body: Form(
-           autovalidate: _autovalidate,
+            autovalidate: _autovalidate,
             key: _key,
             child: ListView(
               padding: EdgeInsets.all(16.0),
@@ -136,7 +136,7 @@ class _LoginState extends State<Login> {
                   validator: (e) {
                     if (e.isEmpty) {
                       return "Insert username!";
-                    } else if(!e.contains("@")){
+                    } else if (!e.contains("@")) {
                       return "Masukkan Email kamu untuk username";
                     }
                   },
@@ -160,7 +160,13 @@ class _LoginState extends State<Login> {
                             : Icons.visibility),
                       )),
                 ),
-                MaterialButton(
+                FlatButton(
+                  color: Colors.purple[800],
+                  textColor: Colors.white,
+                  disabledColor: Colors.grey,
+                  disabledTextColor: Colors.black,
+                  padding: EdgeInsets.all(8.0),
+                  splashColor: Colors.purpleAccent,
                   onPressed: () {
                     check();
                   },
@@ -240,7 +246,9 @@ class _RegisterState extends State<Register> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: Text('Register Page'),
+      ),
       body: Form(
         autovalidate: validate,
         key: _key,
@@ -260,7 +268,7 @@ class _RegisterState extends State<Register> {
               validator: (e) {
                 if (e.isEmpty) {
                   return "Insert username!";
-                } else if(!e.contains("@")){
+                } else if (!e.contains("@")) {
                   return "Masukkan email kamu untuk username";
                 }
               },
@@ -272,7 +280,7 @@ class _RegisterState extends State<Register> {
               validator: (p) {
                 if (p.isEmpty) {
                   return "Insert password!";
-                } else  if(p.length < 4) {
+                } else if (p.length < 4) {
                   return "Password minimal 4 karakter";
                 }
               },
@@ -285,7 +293,13 @@ class _RegisterState extends State<Register> {
                         _secureText ? Icons.visibility_off : Icons.visibility),
                   )),
             ),
-            MaterialButton(
+           FlatButton(
+              color: Colors.purple[800],
+              textColor: Colors.white,
+              disabledColor: Colors.grey,
+              disabledTextColor: Colors.black,
+              padding: EdgeInsets.all(8.0),
+              splashColor: Colors.purpleAccent,
               onPressed: () {
                 check();
               },
@@ -369,7 +383,6 @@ class _MainMenuState extends State<MainMenu> {
                   ),
                 ),
               ),
-              
             ],
           ),
         ),
@@ -396,7 +409,6 @@ class _MainMenuState extends State<MainMenu> {
                 icon: Icon(Icons.apps),
                 text: "Product",
               ),
-              
             ]),
       ),
     );
